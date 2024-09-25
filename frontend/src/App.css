@@ -1,0 +1,57 @@
+:root{
+  --maninbrown: #cdbca8;
+  --mainblue: #6b7a89;
+  --darkblue: #454c54;
+  --darkbrown: #675c5a ;
+  --maindark: #201e1f; 
+}
+
+body{
+  font-family: "Poppins", sans-serif !important;
+  background: var(--maninbrown) !important;
+  color: var(--maindark) !important;
+}
+
+.text-title{
+  font-family:"Lora", serif !important;
+  letter-spacing: 0.3rem;
+  text-transform: uppercase;
+}
+
+
+.text-blue{
+  color: var(--darkblue);
+}
+
+.main-blue{
+  background-color: transparent;
+  border-radius:0.5rem;
+  border-color: var(--mainblue);
+  border: 0.05rem solid;
+}
+
+.text-alt{
+  color: var(--darkbrown);
+}
+
+.text-brown{
+  color: var(--darkbrown);
+}
+
+.blue-text{
+  color: var(--mainblue);
+}
+
+
+.blurred-divider {
+  width: 90%;
+  filter: blur(2px);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+}
+
+.image{
+  margin-top: -1.25rem;
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+}

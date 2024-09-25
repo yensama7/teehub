@@ -1,0 +1,7 @@
+teehub/
+.vscode/
+db.sqlite3
+image/
+migrations/
+__pycache__/
+__init__.py
