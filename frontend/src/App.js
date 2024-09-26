@@ -11,6 +11,7 @@ import SignIn from './components/SignIn';
 import Login from './components/Login';
 import Product from './components/Product';
 import Category from './components/Category';
+import Search from './components/Search';
 
 import './App.css';
 
@@ -23,6 +24,7 @@ class App extends Component{
         <Routes>
           <Route exact path="/"  element={<ProductList/>}></Route>
           <Route path="/details"  element={<Details/>}></Route>
+          <Route path='/search' element={<Search/>}></Route>
           <Route path="/:category_slug/:product_slug" element={<Product/>} />
           <Route path="/:category_slug" element={<Category/>} />
           <Route path="/cart"  element={<Cart/>}></Route>

@@ -12,7 +12,7 @@ const Category = () => {
     try {
       const response = await axios.get(`/core/v1/products/${category_slug}/`); // Use category_slug
       setCategory(response.data);
-      document.title = `${response.data.name} | Djackets`;
+      document.title = `${response.data.name} | TeeHub`;
     } catch (error) {
       console.error(error);
       toast.error('Something went wrong. Please try again.', {
@@ -26,13 +26,13 @@ const Category = () => {
   }, [getCategory]); // Now the dependency array is properly set
 
   return (
-    <div className="row">
-      <div className="col-12">
-        <h2 className="text-center text-title">{category.name}</h2>
+    <div className='container'>
+      <h2 className="text-center text-title text-blue">{category.name}</h2>
+      <div className='row'>
+        {category.products.map((product) => (
+          <ProductBox key={product.id} product={product} />
+        ))}
       </div>
-      {category.products.map((product) => (
-        <ProductBox key={product.id} product={product} />
-      ))}
     </div>
   );
 };

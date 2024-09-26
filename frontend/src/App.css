@@ -72,3 +72,11 @@ background-color: var(--darkbrown);
   background-color: var(--darkbrown); /* Transparent background */
   color: var(--maindark); /* Brown text color */
 }
+
+.links{
+  color: var(--maindark);
+  text-decoration: none;
+}
+.links:hover{
+  color: var(--darkbrown);
+}
