@@ -18,6 +18,12 @@ class Category(models.Model):
     def get_absolute_url(self):
         return f'/{self.slug}/'# gets the url for it
     
+class Size(models.Model):
+    name = models.CharField(max_length=50, unique=True)  # Ensure size names are unique
+
+    def __str__(self):
+        return self.name
+    
 class Product(models.Model):
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -27,6 +33,7 @@ class Product(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='', blank=True, null=True)
     thumbnail = models.ImageField(upload_to='thumbnail/', blank=True, null=True)
+    sizes = models.ManyToManyField(Size, related_name='products', blank=True)  # Add sizes field
 
     class Meta:
         ordering = ('-date_added',) # in decending order
