@@ -38,7 +38,7 @@ export default class ProductList extends Component {
               <div className='row'>
                 {this.state.latestProducts.map((Product) => (
                     <ProductWrapper key={Product.id} className='col-9 mx-auto col-md-6 col-lg-3 my-3'>
-                      <Link to='/'>
+                      <Link to={Product.get_absolute_url} style={{ textDecoration: 'none', color: 'inherit' }}>
                         <div className='card'>
                           <figure className='img-container p-5' onClick={() => console.log("you clicked the image container")}>
                             {/* thumbnail images*/}
