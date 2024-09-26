@@ -10,6 +10,7 @@ import Details from './components/Details';
 import SignIn from './components/SignIn';
 import Login from './components/Login';
 import Product from './components/Product';
+import Category from './components/Category';
 
 import './App.css';
 
@@ -23,6 +24,7 @@ class App extends Component{
           <Route exact path="/"  element={<ProductList/>}></Route>
           <Route path="/details"  element={<Details/>}></Route>
           <Route path="/:category_slug/:product_slug" element={<Product/>} />
+          <Route path="/:category_slug" element={<Category/>} />
           <Route path="/cart"  element={<Cart/>}></Route>
           <Route path="/Sign_in"  element={<SignIn/>}></Route>
           <Route path="/login"  element={<Login/>}></Route>
