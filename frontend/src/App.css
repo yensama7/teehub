@@ -55,3 +55,20 @@ body{
   margin-left: -1.25rem;
   margin-right: -1.25rem;
 }
+
+.add-cart:hover{
+background-color: var(--darkbrown);
+}
+
+/* styles.css */
+.black-outline {
+  outline: 2px solid black; /* Black outline */
+  background-color: transparent; /* Transparent background to see the outline */
+  color: black; /* Black text color */
+}
+
+.brown-outline {
+  outline: 2px solid;
+  background-color: var(--darkbrown); /* Transparent background */
+  color: var(--maindark); /* Brown text color */
+}
