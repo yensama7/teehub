@@ -68,14 +68,17 @@ const cartReducer = (state = initialState, action) => {
                 isAuthenticated: false,
             };
 
-        case 'removeFromCart':
-            const filteredItems = state.items.filter(item => item.product.id !== action.payload);
-            // Save updated cart to local storage
-            localStorage.setItem('cart', JSON.stringify(filteredItems));
-            return {
-                ...state,
-                items: filteredItems,
-            };
+            case 'removeFromCart':
+                const filteredItems = state.items.filter(item => 
+                    !(item.product.id === action.payload.productId && item.size === action.payload.size)
+                );
+                // Save updated cart to local storage
+                localStorage.setItem('cart', JSON.stringify(filteredItems));
+                return {
+                    ...state,
+                    items: filteredItems,
+                };
+            
 
         case 'clearCart':
             const clearedCart = { items: [] };

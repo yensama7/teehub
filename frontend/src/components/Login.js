@@ -34,14 +34,7 @@ const LogIn = ({ setIsLoggedIn }) => {
           const toPath = new URLSearchParams(window.location.search).get('to') || '/cart';
           navigate(toPath);
       } catch (error) {
-          console.error("Login error:", error); // Add this line for debugging
-          if (error.response) {
-              for (const property in error.response.data) {
-                  setErrors(prevErrors => [...prevErrors, `${property}: ${error.response.data[property]}`]);
-              }
-          } else {
-              setErrors(prevErrors => [...prevErrors, 'Something went wrong. Please try again']);
-          }
+          
       }
   };
   

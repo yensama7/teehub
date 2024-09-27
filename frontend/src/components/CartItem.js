@@ -15,14 +15,15 @@ const CartItem = ({ initialItem }) => {
   // Handle decrementing quantity
   const decrementQuantity = () => {
     if (quantity > 1) {
-      dispatch({
-        type: 'addToCart',
-        payload: { product, quantity: -1, size }, // Decrement by 1 while keeping the size
-      });
+        dispatch({
+            type: 'addToCart',
+            payload: { product, quantity: -1, size }, // Decrement by 1 while keeping the size
+        });
     } else {
-      removeItem(); // If quantity is 1, removing the item
+        removeItem(); // If quantity is 1, remove the item
     }
-  };
+};
+
 
   // Handle incrementing quantity
   const incrementQuantity = () => {
@@ -35,10 +36,11 @@ const CartItem = ({ initialItem }) => {
   // Remove the item from the cart
   const removeItem = () => {
     dispatch({
-      type: 'removeFromCart', // Create a new action to handle item removal
-      payload: { productId: product.id, size }, // Include size in the payload for removal
+        type: 'removeFromCart',
+        payload: { productId: product.id, size }, // Include size in the payload for removal
     });
-  };
+};
+
 
   const price = parseFloat(product.price) || 0; // Ensure price is a number
 
