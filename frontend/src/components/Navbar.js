@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ButtonContainer } from './button';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
+import { Dropdown } from 'react-bootstrap';
 
 const Navbar = () => {
     const cartItems = useSelector(state => state.cart.items);
@@ -10,7 +11,13 @@ const Navbar = () => {
     const [showSearch, setShowSearch] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [menuOpen, setMenuOpen] = useState(false);
-    const navigate = useNavigate(); // Hook for navigation
+    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token')); // Check if token exists
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setIsLoggedIn(!!token); // Set login state based on token presence
+    }, []);
 
     const handleSearchToggle = () => {
         setShowSearch(!showSearch);
@@ -25,14 +32,19 @@ const Navbar = () => {
     };
 
     const handleSearchSubmit = (e) => {
-        e.preventDefault(); // Prevent page reload
+        e.preventDefault();
         if (searchTerm.trim()) {
-            // Navigate to the search results page with the query
             navigate(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
         }
     };
 
-    const navbarRef = React.useRef();
+    const handleLogout = () => {
+        setIsLoggedIn(false);
+        localStorage.removeItem('token'); // Clear token
+        navigate('/'); // Redirect to home or login page
+    };
+
+    const navbarRef = useRef();
 
     return (
         <div>
@@ -74,17 +86,39 @@ const Navbar = () => {
                     </li>
 
                     <li className='nav-item'>
-                        <Link to='/Sign_in'>
-                            <ButtonContainer className='ml-auto' style={{ border: 'none', borderRadius: '2rem' }}>
-                                <span><i className="fas fa-user" /></span>
-                            </ButtonContainer>
-                        </Link>
+                        <Dropdown align="end">
+                            <Dropdown.Toggle variant="light" id="dropdown-basic">
+                                <i className="fas fa-user-circle" style={{ fontSize: '24px' }}></i>
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu>
+                                {!isLoggedIn ? (
+                                    <>
+                                        <Dropdown.Item as={Link} to="/sign-up">
+                                            Sign Up
+                                        </Dropdown.Item>
+                                        <Dropdown.Item as={Link} to="/log-in">
+                                            Log In
+                                        </Dropdown.Item>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Dropdown.Item as={Link} to="/account">
+                                            My Account
+                                        </Dropdown.Item>
+                                        <Dropdown.Item onClick={handleLogout}>
+                                            Log Out
+                                        </Dropdown.Item>
+                                    </>
+                                )}
+                            </Dropdown.Menu>
+                        </Dropdown>
                     </li>
 
                     <li className='nav-item'>
                         <Link to='/cart'>
                             <ButtonContainer className='ml-auto' style={{ border: 'none', borderRadius: '2rem' }}>
-                                <span><i className='fas fa-cart-plus' /> {cartTotalLength}</span>
+                                <span><i className='fas fa-cart-plus' /> <i className='cart-num'>{cartTotalLength}</i></span>
                             </ButtonContainer>
                         </Link>
                     </li>
@@ -110,6 +144,7 @@ const Navbar = () => {
         </div>
     );
 };
+
 
 const NavWrapper = styled.nav`
     background: var(--darkblue);

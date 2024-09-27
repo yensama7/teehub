@@ -18,6 +18,12 @@ body{
   text-transform: uppercase;
 }
 
+.text-cart{
+  font-family:"Lora", serif !important;
+  letter-spacing: 0.3rem;
+  font-weight: bold;
+}
+
 
 .text-blue{
   color: var(--darkblue);
@@ -80,3 +86,9 @@ background-color: var(--darkbrown);
 .links:hover{
   color: var(--darkbrown);
 }
+
+.cart-num{
+  font-size: large;
+  font-family: "Poppins", sans-serif !important;
+}
+
