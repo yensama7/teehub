@@ -3,26 +3,48 @@
         <div class="columns is-multiline">
             <div class="column is-9">
                 <figure class="image mb-6">
-                    <img v-bind:src="product.get_image">
+                    <img :src="currentImageSrc" alt="Product Image">
                 </figure>
 
-                <h1 class="title">{{ product.name }}</h1>
+                 <!-- Navigation buttons for image gallery -->
+                 <div class="buttons is-centered">
+                    <button class="button is-light" @click="prevImage" :disabled="currentImageIndex === 0">
+                        Previous
+                    </button>
+                    <button class="button is-success" @click="nextImage" :disabled="currentImageIndex === allImages.length - 1">
+                        Next
+                    </button>
+                </div>
 
+                <h1 class="title">{{ product.name }}</h1>
                 <p>{{ product.description }}</p>
             </div>
 
             <div class="column is-3">
                 <h2 class="subtitle">Information</h2>
-
                 <p><strong>Price: </strong>${{ product.price }}</p>
 
+                <!-- Size selection dropdown -->
+                <div class="field">
+                    <label class="label">Size</label>
+                    <div class="control">
+                        <div class="select">
+                            <select v-model="selectedSize">
+                                <option disabled value="">Select a size</option>
+                                <option v-for="size in product.sizes" :key="size.name" :value="size.name">{{ size.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <p v-if="sizeError" class="help is-danger">Please select a size</p>
+                </div>
+
+                <!-- Quantity input and Add to Cart button -->
                 <div class="field has-addons mt-6">
                     <div class="control">
                         <input type="number" class="input" min="1" v-model="quantity">
                     </div>
-
                     <div class="control">
-                        <a class="button is-dark" @click="addToCart()">Add to cart</a>
+                        <a class="button is-dark" @click="addToCart">Add to cart</a>
                     </div>
                 </div>
             </div>
@@ -39,43 +61,81 @@ export default {
     data() {
         return {
             product: {},
-            quantity: 1
+            quantity: 1,
+            selectedSize: '',
+            sizeError: false,
+            currentImageIndex: 0 // Index to track current image in the gallery
+        }
+    },
+    computed: {
+        // Combine main image and product images into one array
+        allImages() {
+            return [this.product.get_image, ...(this.product.images || []).map(img => img.get_images)];
+        },
+        // Determine which image to show based on the index
+        currentImageSrc() {
+            return this.allImages[this.currentImageIndex];
         }
     },
     mounted() {
-        this.getProduct() 
+        this.getProduct()
     },
     methods: {
         async getProduct() {
             this.$store.commit('setIsLoading', true)
-
             const category_slug = this.$route.params.category_slug
             const product_slug = this.$route.params.product_slug
 
-            await axios
-                .get(`/core/v1/products/${category_slug}/${product_slug}`)
-                .then(response => {
-                    this.product = response.data
-
-                    document.title = this.product.name + ' | Djackets'
-                })
-                .catch(error => {
-                    console.log(error)
-                })
+            try {
+                const response = await axios.get(`/core/v1/products/${category_slug}/${product_slug}`)
+                this.product = response.data
+                this.selectedSize = ''  // Force user to explicitly select a size
+                document.title = this.product.name + ' | TeeHub'
+            } catch (error) {
+                console.log(error)
+            }
             
             this.$store.commit('setIsLoading', false)
         },
-        addToCart() {
-            if (isNaN(this.quantity) || this.quantity < 1) {
-                this.quantity = 1
+        // Method to move to the previous image in the gallery
+        prevImage() {
+            if (this.currentImageIndex > 0) {
+                this.currentImageIndex--;
             }
+        },
+        
+        // Method to move to the next image in the gallery
+        nextImage() {
+            if (this.currentImageIndex < this.allImages.length - 1) {
+                this.currentImageIndex++;
+            }
+        },
+
+        addToCart() {
+            if (!this.selectedSize) {
+                this.sizeError = true
+                toast({
+                    message: 'Please select a size before adding to the cart',
+                    type: 'is-danger',
+                    dismissible: true,
+                    pauseOnHover: true,
+                    duration: 2000,
+                    position: 'bottom-right',
+                })
+                return
+            }
+
+            // Reset the error if size is selected
+            this.sizeError = false
 
             const item = {
                 product: this.product,
-                quantity: this.quantity
+                quantity: this.quantity,
+                size: this.selectedSize
             }
 
-            this.$store.commit('addToCart', item)
+            // Commit the action to Vuex to handle cart item addition
+            this.$store.commit('addOrUpdateCartItem', item)
 
             toast({
                 message: 'The product was added to the cart',
@@ -89,3 +149,4 @@ export default {
     }
 }
 </script>
+

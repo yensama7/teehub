@@ -66,7 +66,7 @@
     </section>
 
     <footer class="footer">
-      <p class="has-text-centered">Copyright (c) 2021</p>
+      <p class="has-text-centered">Copyright (c) 2024</p>
     </footer>
   </div>
 </template>
@@ -151,11 +151,4 @@ export default {
   }
 }
 
-:root{
-  --maninbrown: #cdbca8;
-  --mainblue: #6b7a89;
-  --darkblue: #454c54;
-  --darkbrown: #675c5a ;
-  --maindark: #201e1f; 
-}
 </style>

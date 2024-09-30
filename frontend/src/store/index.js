@@ -25,16 +25,20 @@ export default createStore({
           state.isAuthenticated = false
       } 
     },
-    addToCart(state, item) {
-      const exists = state.cart.items.filter(i => i.product.id === item.product.id)
-      if (exists.length) {
-        exists[0].quantity = parseInt(exists[0].quantity) + parseInt(item.quantity)
+    addOrUpdateCartItem(state, item) {
+      const existingItem = state.cart.items.find(i => i.product.id === item.product.id && i.size === item.size)
+
+      if (existingItem) {
+          // If the product with the same size exists, just update the quantity
+          existingItem.quantity += item.quantity
       } else {
-        state.cart.items.push(item)
+          // Otherwise, add the new item to the cart
+          state.cart.items.push(item)
       }
 
+      // Save updated cart to localStorage or API
       localStorage.setItem('cart', JSON.stringify(state.cart))
-    },
+  },
     setIsLoading(state, status) {
       state.isLoading = status
     },

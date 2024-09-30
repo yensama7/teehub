@@ -19,10 +19,10 @@
 
                     <tbody>
                         <CartItem
-                            v-for="item in cart.items"
-                            v-bind:key="item.product.id"
+                            v-for="(item, index) in cart.items"
+                            v-bind:key="item.product.id + '-' + item.size"  
                             v-bind:initialItem="item"
-                            v-on:removeFromCart="removeFromCart" />
+                            v-on:removeFromCart="removeFromCart" /><!-- Key now includes size -->
                     </tbody>
                 </table>
 
@@ -63,19 +63,20 @@ export default {
     },
     methods: {
         removeFromCart(item) {
-            this.cart.items = this.cart.items.filter(i => i.product.id !== item.product.id)
+            // Filter by both product ID and size
+            this.cart.items = this.cart.items.filter(i => i.product.id !== item.product.id || i.size !== item.size)
+            this.updateCart()
+        },
+        updateCart() {
+            localStorage.setItem('cart', JSON.stringify(this.cart)) // Persist cart updates
         }
     },
     computed: {
         cartTotalLength() {
-            return this.cart.items.reduce((acc, curVal) => {
-                return acc += curVal.quantity
-            }, 0)
+            return this.cart.items.reduce((acc, curVal) => acc + curVal.quantity, 0)
         },
         cartTotalPrice() {
-            return this.cart.items.reduce((acc, curVal) => {
-                return acc += curVal.product.price * curVal.quantity
-            }, 0)
+            return this.cart.items.reduce((acc, curVal) => acc + curVal.product.price * curVal.quantity, 0)
         },
     }
 }

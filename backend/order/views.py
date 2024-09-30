@@ -26,27 +26,20 @@ def checkout(request):
     
     if serializer.is_valid():
         # Calculate total paid amount
-        total_paid_amount = 0
-        for item in serializer.validated_data['items']:
-            product = item['product']
-            quantity = item['quantity']
-            total_paid_amount += product.price * quantity
+        paid_amount = sum(item.get('quantity') * item.get('product').price for item in serializer.validated_data['items'])
 
         try:
-            with transaction.atomic():
-                # Create a new order
-                order = serializer.save(user=request.user, paid_amount=total_paid_amount)
-                
-                # Generate and save the transaction reference
-                order.generate_reference()
-                
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-        except Exception as e:
-            # Log the exception if necessary
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save(user=request.user, paid_amount=paid_amount)
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            print(f"error : {e}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    else:
+        print("Serializer Errors:", serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderList(APIView):

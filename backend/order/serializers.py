@@ -33,10 +33,9 @@ class MyOrderSerializer(serializers.ModelSerializer):
             "email",
             "address",
             "place",
-            "phone_number",
+            "phone",
             "items",
             "paid_amount",
-            "reference",
         )
 
 
@@ -67,7 +66,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "email",
             "address",
             "place",
-            "phone_number",
+            "phone",
             "items",
         )
 

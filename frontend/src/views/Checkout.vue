@@ -13,6 +13,7 @@
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Total</th>
+                            <th>Size</th>
                         </tr>
                     </thead>
 
@@ -25,6 +26,7 @@
                             <td>${{ item.product.price }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>${{ getItemTotal(item).toFixed(2) }}</td>
+                            <td>{{ item.size }}</td>
                         </tr>
                     </tbody>
 
@@ -83,13 +85,6 @@
                         </div>
 
                         <div class="field">
-                            <label>Zip code*</label>
-                            <div class="control">
-                                <input type="text" class="input" v-model="zipcode">
-                            </div>
-                        </div>
-
-                        <div class="field">
                             <label>Place*</label>
                             <div class="control">
                                 <input type="text" class="input" v-model="place">
@@ -108,152 +103,173 @@
 
                 <template v-if="cartTotalLength">
                     <hr>
-
-                    <button class="button is-dark" @click="submitForm">Pay with Stripe</button>
+                
+                    <paystack
+                        :amount="paystack_price"
+                        :email="email"
+                        :paystackkey="paystackkey"
+                        :reference="generateReference"
+                        :callback="callback"
+                        :close="close"
+                        :embed="false"
+                        :disabled="!isValid" 
+                        class="button is-dark"
+                    >
+                        <i class="fas fa-money-bill-alt"></i>
+                        Make Payment
+                    </paystack>
                 </template>
             </div>
         </div>
     </div>
 </template>
 
+
 <script>
-import axios from 'axios'
+import axios from 'axios';
+import paystack from 'vue-paystack'
+
 
 export default {
+    components: {
+    paystack,
+    },
     name: 'Checkout',
     data() {
         return {
             cart: {
                 items: []
             },
-            stripe: {},
-            card: {},
             first_name: '',
             last_name: '',
             email: '',
             phone: '',
             address: '',
-            zipcode: '',
             place: '',
-            errors: []
+            errors: [],
+            paystackkey: 'pk_test_92bf254a3195e42b377cacf8c58a26a1adebb0cb',
         }
     },
     mounted() {
-        document.title = 'Checkout | TeeHub'
-
-        this.cart = this.$store.state.cart
-
-        if (this.cartTotalLength > 0) {
-            this.stripe = Stripe('pk_test_51H1HiuKBJV2qfWbD2gQe6aqanfw6Eyul5PO2KeOuSRlUMuaV4TxEtaQyzr9DbLITSZweL7XjK3p74swcGYrE2qEX00Hz7GmhMI')
-            const elements = this.stripe.elements();
-            this.card = elements.create('card', { hidePostalCode: true })
-
-            this.card.mount('#card-element')
-        }
-    },
+        document.title = 'Checkout | TeeHub';
+        this.cart = this.$store.state.cart;
+    }, 
     methods: {
-        getItemTotal(item) {
-            return item.quantity * item.product.price
-        },
-        submitForm() {
-            this.errors = []
+        callback: function (response) {
+            const items = []; // Initialize items array here
+                for (let i = 0; i < this.cart.items.length; i++) {
+                    const item = this.cart.items[i];
+                    const obj = {
+                        product: item.product.id,
+                        quantity: item.quantity,
+                        price: item.product.price * item.quantity
+                    };
 
-            if (this.first_name === '') {
-                this.errors.push('The first name field is missing!')
-            }
-
-            if (this.last_name === '') {
-                this.errors.push('The last name field is missing!')
-            }
-
-            if (this.email === '') {
-                this.errors.push('The email field is missing!')
-            }
-
-            if (this.phone === '') {
-                this.errors.push('The phone field is missing!')
-            }
-
-            if (this.address === '') {
-                this.errors.push('The address field is missing!')
-            }
-
-            if (this.zipcode === '') {
-                this.errors.push('The zip code field is missing!')
-            }
-
-            if (this.place === '') {
-                this.errors.push('The place field is missing!')
-            }
-
-            if (!this.errors.length) {
-                this.$store.commit('setIsLoading', true)
-
-                this.stripe.createToken(this.card).then(result => {                    
-                    if (result.error) {
-                        this.$store.commit('setIsLoading', false)
-
-                        this.errors.push('Something went wrong with Stripe. Please try again')
-
-                        console.log(result.error.message)
-                    } else {
-                        this.stripeTokenHandler(result.token)
-                    }
-                })
-            }
-        },
-        async stripeTokenHandler(token) {
-            const items = []
-
-            for (let i = 0; i < this.cart.items.length; i++) {
-                const item = this.cart.items[i]
-                const obj = {
-                    product: item.product.id,
-                    quantity: item.quantity,
-                    price: item.product.price * item.quantity
+                    items.push(obj);
                 }
 
-                items.push(obj)
-            }
+                const data = {
+                    'first_name': this.first_name,
+                    'last_name': this.last_name,
+                    'email': this.email,
+                    'address': this.address,
+                    'place': this.place,
+                    'phone': this.phone,
+                    'items': items,
+                };
+                axios
+                    .post('/core/v1/checkout/', data)
+                    .then(response => {
+                        console.log(response)
 
-            const data = {
-                'first_name': this.first_name,
-                'last_name': this.last_name,
-                'email': this.email,
-                'address': this.address,
-                'zipcode': this.zipcode,
-                'place': this.place,
-                'phone': this.phone,
-                'items': items,
-                'stripe_token': token.id
-            }
-
-            await axios
-                .post('/core/v1/checkout/', data)
-                .then(response => {
-                    this.$store.commit('clearCart')
-                    this.$router.push('/cart/success')
-                })
-                .catch(error => {
-                    this.errors.push('Something went wrong. Please try again')
-
-                    console.log(error)
-                })
-
-                this.$store.commit('setIsLoading', false)
-        }
-    },
-    computed: {
-        cartTotalPrice() {
-            return this.cart.items.reduce((acc, curVal) => {
-                return acc += curVal.product.price * curVal.quantity
-            }, 0)
+                    })
+                    .catch(error => {
+                        this.errors.push('Something went wrong. Please try again');
+                        console.log(error);
+                    });
+                // Payment was successful
+                this.$store.commit('clearCart');
+                this.$router.push('/cart/success');
+            console.log(response.status);
         },
-        cartTotalLength() {
-            return this.cart.items.reduce((acc, curVal) => {
-                return acc += curVal.quantity
-            }, 0)
+        close: function () {
+            this.errors = [];
+            // User closed the payment modal
+            this.$router.push('/cart')
+            this.errors.push('Payment modal closed')
+            console.log('Payment modal closed');
+        },
+        getItemTotal(item) {
+            return item.quantity * item.product.price;
+        },
+        submitForm() {
+            this.errors = [];
+            
+            const emailpattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (this.first_name === '') {
+                this.errors.push('The first name field is missing!');
+            }
+
+            else if (this.last_name === '') {
+                this.errors.push('The last name field is missing!');
+            }
+
+            else if (this.email === '') {
+                this.errors.push('The email field is missing!');
+            }
+            
+            else if (!emailpattern.test(this.email)){
+                this.errors.push('invalid email');
+            }
+            
+
+            else if (this.phone === '') {
+                this.errors.push('The phone field is missing!');
+            }
+
+            else if (this.address === '') {
+                this.errors.push('The address field is missing!');
+            }
+
+            else if (this.place === '') {
+                this.errors.push('The place field is missing!');
+            }
+
+            else if (!this.errors.length) {
+                this.$store.commit('setIsLoading', true);
+
+                this.$store.commit('setIsLoading', false);
+
         }
+        
+
+                
+            }
+        },
+    computed: {
+    cartTotalPrice() {
+        return this.cart.items.reduce((acc, curVal) => {
+            return acc += curVal.product.price * curVal.quantity;
+        }, 0);
+    },
+    cartTotalLength() {
+        return this.cart.items.reduce((acc, curVal) => {
+            return acc += curVal.quantity;
+        }, 0);
+    },
+    generateReference(){
+        let date = new Date();
+        return date.getTime().toString();
+    },
+    isValid() {
+        return this.submitForm(); // Call submitForm method
+    },
+    paystack_price(){
+        return this.cartTotalPrice * 100;
     }
 }
+    }
+    
+
 </script>

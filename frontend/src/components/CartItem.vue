@@ -1,6 +1,11 @@
 <template>
     <tr>
-        <td><router-link :to="item.product.get_absolute_url">{{ item.product.name }}</router-link></td>
+        <td>
+            <router-link :to="item.product.get_absolute_url">{{ item.product.name }}</router-link>
+            <br>
+            <!-- Display the selected size -->
+            <small>Size: {{ item.size }}</small> <!-- Show the selected size here -->
+        </td>
         <td>${{ item.product.price }}</td>
         <td>
             <a @click="decrementQuantity(item)">-</a>
@@ -12,15 +17,16 @@
     </tr>
 </template>
 
+
 <script>
 export default {
     name: 'CartItem',
     props: {
-        initialItem: Object
+        initialItem: Object  // Expect the size to be included in the initial item
     },
     data() {
         return {
-            item: this.initialItem
+            item: this.initialItem  // 'item' will now include 'size'
         }
     },
     methods: {

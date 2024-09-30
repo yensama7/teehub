@@ -11,6 +11,7 @@
                     <th>Price</th>
                     <th>Quantity</th>
                     <th>Total</th>
+                    <th>Size</th>
                 </tr>
             </thead>
 
@@ -23,6 +24,7 @@
                     <td>${{ item.product.price }}</td>
                     <td>{{ item.quantity }}</td>
                     <td>${{ getItemTotal(item).toFixed(2) }}</td>
+                    <td>{{ item.size }}</td>
                 </tr>
             </tbody>
         </table>
