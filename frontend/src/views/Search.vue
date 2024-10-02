@@ -22,12 +22,12 @@ import ProductBox from '@/components/ProductBox.vue'
 export default {
     name: 'Search',
     components: {
-        ProductBox
+        ProductBox // gets this component
     },
     data() {
         return {
-            products: [],
-            query: ''
+            products: [], // set array for response
+            query: '' // sent to backend
         }
     },
     mounted() {
@@ -39,17 +39,17 @@ export default {
         if (params.get('query')) {
             this.query = params.get('query')
 
-            this.performSearch()
+            this.performSearch() // calls a function 
         }
     },
     methods: {
         async performSearch() {
-            this.$store.commit('setIsLoading', true)
+            this.$store.commit('setIsLoading', true) // set loading ring
 
             await axios
-                .post('/core/v1/products/search/', {'query': this.query})
+                .post('/core/v1/products/search/', {'query': this.query}) // post query to the backend
                 .then(response => {
-                    this.products = response.data
+                    this.products = response.data // sends all the response products to the product array above
                 })
                 .catch(error => {
                     console.log(error)

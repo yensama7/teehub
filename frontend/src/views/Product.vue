@@ -64,13 +64,13 @@ export default {
             quantity: 1,
             selectedSize: '',
             sizeError: false,
-            currentImageIndex: 0 // Index to track current image in the gallery
+            currentImageIndex: 0 // Index to track current image in the image gallery
         }
     },
     computed: {
         // Combine main image and product images into one array
         allImages() {
-            return [this.product.get_image, ...(this.product.images || []).map(img => img.get_images)];
+            return [this.product.get_image, ...(this.product.images || []).map(img => img.get_images)]; // iterates over products.images to give get images(for img in product.images)
         },
         // Determine which image to show based on the index
         currentImageSrc() {
@@ -83,8 +83,8 @@ export default {
     methods: {
         async getProduct() {
             this.$store.commit('setIsLoading', true)
-            const category_slug = this.$route.params.category_slug
-            const product_slug = this.$route.params.product_slug
+            const category_slug = this.$route.params.category_slug // get the category slug
+            const product_slug = this.$route.params.product_slug // get the product slug
 
             try {
                 const response = await axios.get(`/core/v1/products/${category_slug}/${product_slug}`)

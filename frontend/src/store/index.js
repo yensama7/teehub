@@ -12,12 +12,12 @@ export default createStore({
   mutations: {
     initializeStore(state) {
       if (localStorage.getItem('cart')) {
-        state.cart = JSON.parse(localStorage.getItem('cart'))
+        state.cart = JSON.parse(localStorage.getItem('cart')) // if cart is caled it will give cart items
       } else {
-        localStorage.setItem('cart', JSON.stringify(state.cart))
+        localStorage.setItem('cart', JSON.stringify(state.cart))// updates cart
       }
 
-      if (localStorage.getItem('token')) {
+      if (localStorage.getItem('token')) { // if token is caled it will send token
           state.token = localStorage.getItem('token')
           state.isAuthenticated = true
       } else {
@@ -26,7 +26,7 @@ export default createStore({
       } 
     },
     addOrUpdateCartItem(state, item) {
-      const existingItem = state.cart.items.find(i => i.product.id === item.product.id && i.size === item.size)
+      const existingItem = state.cart.items.find(i => i.product.id === item.product.id && i.size === item.size)// adds product to cart based on product id and size
 
       if (existingItem) {
           // If the product with the same size exists, just update the quantity

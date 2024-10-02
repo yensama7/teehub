@@ -6,7 +6,7 @@
             </div>
 
             <div class="column is-12 box">
-                <table class="table is-fullwidth" v-if="cartTotalLength">
+                <table class="table is-fullwidth" v-if="cartTotalLength"> <!--comes on if we have items in the cart-->
                     <thead>
                         <tr>
                             <th>Product</th>
@@ -22,11 +22,11 @@
                             v-for="(item, index) in cart.items"
                             v-bind:key="item.product.id + '-' + item.size"  
                             v-bind:initialItem="item"
-                            v-on:removeFromCart="removeFromCart" /><!-- Key now includes size -->
+                            v-on:removeFromCart="removeFromCart" /><!-- iterates over cart.items to bind product and size -->
                     </tbody>
                 </table>
 
-                <p v-else>You don't have any products in your cart...</p>
+                <p v-else>You don't have any products in your cart...</p> <!--comes on if we don't-->
             </div>
 
             <div class="column is-12 box">
@@ -49,7 +49,7 @@ import CartItem from '@/components/CartItem.vue'
 export default {
     name: 'Cart',
     components: {
-        CartItem
+        CartItem // access cart item  components
     },
     data() {
         return {
@@ -59,13 +59,13 @@ export default {
         }
     },
     mounted() {
-        this.cart = this.$store.state.cart
+        this.cart = this.$store.state.cart // access cart from vuex store
     },
     methods: {
         removeFromCart(item) {
             // Filter by both product ID and size
-            this.cart.items = this.cart.items.filter(i => i.product.id !== item.product.id || i.size !== item.size)
-            this.updateCart()
+            this.cart.items = this.cart.items.filter(i => i.product.id !== item.product.id || i.size !== item.size) // removes the product from the crt
+            this.updateCart() // calls an update function
         },
         updateCart() {
             localStorage.setItem('cart', JSON.stringify(this.cart)) // Persist cart updates

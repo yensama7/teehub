@@ -17,7 +17,7 @@
 export default {
     name: 'ProductBox',
     props: {
-        product: Object
+        product: Object // collects data from another page
     }
 }
 </script>

@@ -27,7 +27,7 @@
                     </div>
 
                     <div class="notification is-danger" v-if="errors.length">
-                        <p v-for="error in errors" v-bind:key="error">{{ error }}</p>
+                        <p v-for="error in errors" v-bind:key="error">{{ error }}</p> <!--iterates over error array to find any error and prints it-->
                     </div>
 
                     <div class="field">
@@ -82,7 +82,7 @@ export default {
                 }
 
                 axios
-                    .post("/core/v1/users/", formData)
+                    .post("/core/v1/users/", formData) // sends the data to user in django
                     .then(response => {
                         toast({
                             message: 'Account created, please log in!',

@@ -31,7 +31,7 @@ import OrderSummary from '@/components/OrderSummary.vue'
 export default {
     name: 'MyAccount',
     components: {
-        OrderSummary
+        OrderSummary // gets ordersummary
     },
     data() {
         return {

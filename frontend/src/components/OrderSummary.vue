@@ -1,6 +1,6 @@
 <template>
     <div class="box mb-4">
-        <h3 class="is-size-4 mb-6">Order #{{ order.id }}</h3>
+        <h3 class="is-size-4 mb-6">Order #{{ order.id }}</h3> <!--get order id-->
 
         <h4 class="is-size-5">Products</h4>
 
@@ -18,8 +18,8 @@
             <tbody>
                 <tr
                     v-for="item in order.items"
-                    v-bind:key="item.product.id"
-                >
+                    v-bind:key="item.product.id + '-' + item.size"
+                > <!--iterates over order.items, settingproduct id as unique key-->
                     <td>{{ item.product.name }}</td>
                     <td>${{ item.product.price }}</td>
                     <td>{{ item.quantity }}</td>
@@ -35,7 +35,7 @@
 export default {
     name: 'OrderSummary',
     props: {
-        order: Object
+        order: Object // accepts data from another page
     },
     methods: {
         getItemTotal(item) {
@@ -43,7 +43,7 @@ export default {
         },
         orderTotalLength(order) {
             return order.items.reduce((acc, curVal) => {
-                return acc += curVal.quantity
+                return acc += curVal.quantity // calculates number of products in cart
             }, 0)
         },
     }

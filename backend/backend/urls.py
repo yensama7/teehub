@@ -5,7 +5,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('core/v1/', include('djoser.urls')),
+    path('core/v1/', include('djoser.urls')), # uses djoser for sign up and login tokenization
     path('core/v1/', include('djoser.urls.authtoken')),
     path('core/v1/', include('core.urls')),
     path('core/v1/', include('order.urls')),

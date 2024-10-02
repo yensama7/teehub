@@ -20,7 +20,7 @@
                     <tbody>
                         <tr
                             v-for="item in cart.items"
-                            v-bind:key="item.product.id"
+                            v-bind:key="item.product.id + '-' + item.size"
                         >
                             <td>{{ item.product.name }}</td>
                             <td>${{ item.product.price }}</td>
@@ -114,7 +114,7 @@
                         :embed="false"
                         :disabled="!isFormValid" 
                         class="button is-dark"
-                    >
+                    > <!--disables the button till the requirements are met-->
                         <i class="fas fa-money-bill-alt"></i>
                         Make Payment
                     </paystack>
@@ -147,7 +147,7 @@ export default {
             address: '',
             place: '',
             errors: [],
-            paystackkey: 'pk_test_92bf254a3195e42b377cacf8c58a26a1adebb0cb',
+            paystackkey: 'pk_test_92bf254a3195e42b377cacf8c58a26a1adebb0cb',// public key
         }
     },
     mounted() {
@@ -295,13 +295,13 @@ export default {
     },
     generateReference(){
         let date = new Date();
-        return date.getTime().toString();
+        return date.getTime().toString(); // gets reference based on time
     },
     isValid() {
         return this.submitForm(); // Call submitForm method
     },
     paystack_price(){
-        return this.cartTotalPrice * 100;
+        return this.cartTotalPrice * 100; // price converted from kobo to naira in paystack
     }
 }
     }

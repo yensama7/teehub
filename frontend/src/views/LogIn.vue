@@ -67,13 +67,13 @@ export default {
             await axios
                 .post("/core/v1/token/login/", formData)
                 .then(response => {
-                    const token = response.data.auth_token
+                    const token = response.data.auth_token // gets auth token
 
-                    this.$store.commit('setToken', token)
+                    this.$store.commit('setToken', token) // sends the token to vuex store
                     
-                    axios.defaults.headers.common["Authorization"] = "Token " + token
+                    axios.defaults.headers.common["Authorization"] = "Token " + token // confirms authorization
 
-                    localStorage.setItem("token", token)
+                    localStorage.setItem("token", token) // save token
 
                     const toPath = this.$route.query.to || '/cart'
 

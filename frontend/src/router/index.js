@@ -43,7 +43,7 @@ const routes = [
     name: 'MyAccount',
     component: MyAccount,
     meta: {
-        requireLogin: true
+        requireLogin: true // requires login to access
     }
   },
   {
@@ -87,7 +87,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requireLogin) && !store.state.isAuthenticated) {
+  if (to.matched.some(record => record.meta.requireLogin) && !store.state.isAuthenticated) { // if user not authenticated in store, takes him/her to login
     next({ name: 'LogIn', query: { to: to.path } });
   } else {
     next()

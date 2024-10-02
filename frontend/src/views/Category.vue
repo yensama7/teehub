@@ -22,7 +22,7 @@ import ProductBox from '@/components/ProductBox'
 export default {
     name: 'Category',
     components: {
-        ProductBox
+        ProductBox // gets ProductBox
     },
     data() {
         return {
@@ -37,20 +37,20 @@ export default {
     watch: {
         $route(to, from) {
             if (to.name === 'Category') {
-                this.getCategory()
+                this.getCategory() // if the route is going to category, run getCategory()
             }
         }
     },
     methods: {
         async getCategory() {
-            const categorySlug = this.$route.params.category_slug
+            const categorySlug = this.$route.params.category_slug // gets the cartegory slug
 
-            this.$store.commit('setIsLoading', true)
+            this.$store.commit('setIsLoading', true) // set loading rings when accessing category
 
             axios
                 .get(`/core/v1/products/${categorySlug}/`)
                 .then(response => {
-                    this.category = response.data
+                    this.category = response.data // sends the response to category
 
                     document.title = this.category.name + ' | TeeHub'
                 })

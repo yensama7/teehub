@@ -22,7 +22,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-wv979t0^ek845)r92sc)e=+$-lvw=g@w1d$nbpb1(%q&lmlabq'
-FLUTTERWAVE_SECRET_KEY = 'FLWSECK_TEST-f646a205afef57bfacef53ad3c40824d-X'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -46,15 +45,13 @@ INSTALLED_APPS = [
     'djoser'
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     "http://192.168.50.234:8080",
-    "https://api.ravepay.co",
-    "https://flw-events-ge.myflutterwave.com",
 
-]
+] # allows the following ip address to access it's resources
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

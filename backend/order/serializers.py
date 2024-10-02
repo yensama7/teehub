@@ -5,14 +5,17 @@ from .models import Order, OrderItem
 from core.serializers import ProductSerializer
 
 
+# serializers that start with my are for the customers
+
 class MyOrderItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
     class Meta:
         model = OrderItem
         fields = (
-            "price",
             "product",
             "quantity",
+            "price",
+            "sizes"
         )
 
     def validate_quantity(self, value):
@@ -36,6 +39,7 @@ class MyOrderSerializer(serializers.ModelSerializer):
             "phone",
             "items",
             "paid_amount",
+            "transaction_id"
         )
 
 
@@ -43,9 +47,10 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         fields = (
-            "price",
             "product",
             "quantity",
+            "price",
+            "sizes"
         )
     def validate_quantity(self, value):
         if value < 1:

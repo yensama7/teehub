@@ -3,7 +3,7 @@ from .models import Product,Category,ItemImage,Size
 
 class ItemImageInline(admin.TabularInline):
     model = ItemImage
-    extra = 1
+    extra = 1 # default number of image input form (1)
 
 class ItemAdmin(admin.ModelAdmin):
     inlines = [ItemImageInline]
@@ -18,6 +18,6 @@ admin.site.register(Product,ItemAdmin)
 admin.site.register(Category)
 
 
-@admin.register(Size)
+@admin.register(Size) # Adds sizes to the admin site
 class SizeAdmin(admin.ModelAdmin):
     list_display = ('name',)
