@@ -52,6 +52,7 @@ export default {
         .get('/core/v1/latest-products/')
         .then(response => {
           this.latestProducts = response.data
+          console.log(response.data); // Check the structure here
         })
         .catch(error => {
           console.log(error)

@@ -22,7 +22,7 @@
 
             <div class="column is-3">
                 <h2 class="subtitle">Information</h2>
-                <p><strong>Price: </strong>${{ product.price }}</p>
+                <p><strong>Price: </strong>${{ currentPrice }}</p> <!-- Change to currentPrice -->
 
                 <!-- Size selection dropdown -->
                 <div class="field">
@@ -31,7 +31,9 @@
                         <div class="select">
                             <select v-model="selectedSize">
                                 <option disabled value="">Select a size</option>
-                                <option v-for="size in product.sizes" :key="size.name" :value="size.name">{{ size.name }}</option>
+                                <option v-for="size in product.sizes" :key="size.size.id" :value="size.size.id">
+                                    {{ size.size.name }}
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -64,38 +66,49 @@ export default {
             quantity: 1,
             selectedSize: '',
             sizeError: false,
-            currentImageIndex: 0 // Index to track current image in the image gallery
+            currentImageIndex: 0, // Index to track current image in the image gallery
+            currentPrice: 0 // To hold the current price based on size
         }
     },
     computed: {
         // Combine main image and product images into one array
         allImages() {
-            return [this.product.get_image, ...(this.product.images || []).map(img => img.get_images)]; // iterates over products.images to give get images(for img in product.images)
+            return [this.product.get_image, ...(this.product.images || []).map(img => img.get_images)];
         },
         // Determine which image to show based on the index
         currentImageSrc() {
             return this.allImages[this.currentImageIndex];
         }
     },
+    watch: {
+        selectedSize(newSize) {
+            this.updatePrice(newSize);
+        }
+    },
     mounted() {
-        this.getProduct()
+        this.getProduct();
     },
     methods: {
         async getProduct() {
-            this.$store.commit('setIsLoading', true)
-            const category_slug = this.$route.params.category_slug // get the category slug
-            const product_slug = this.$route.params.product_slug // get the product slug
+            this.$store.commit('setIsLoading', true);
+            const category_slug = this.$route.params.category_slug;
+            const product_slug = this.$route.params.product_slug;
 
             try {
-                const response = await axios.get(`/core/v1/products/${category_slug}/${product_slug}`)
-                this.product = response.data
-                this.selectedSize = ''  // Force user to explicitly select a size
-                document.title = this.product.name + ' | TeeHub'
+                const response = await axios.get(`/core/v1/products/${category_slug}/${product_slug}`);
+                this.product = response.data;
+                this.selectedSize = '';  // Force user to explicitly select a size
+                this.currentPrice = this.product.sizes.length > 0 ? this.product.sizes[0].price : 0; // Set initial price
+                document.title = this.product.name + ' | TeeHub';
             } catch (error) {
-                console.log(error)
+                console.log(error);
             }
-            
-            this.$store.commit('setIsLoading', false)
+
+            this.$store.commit('setIsLoading', false);
+        },
+        updatePrice(selectedSize) {
+            const sizePriceObj = this.product.sizes.find(size => size.size.id === selectedSize);
+            this.currentPrice = sizePriceObj ? sizePriceObj.price : 0; // Update current price based on selected size
         },
         // Method to move to the previous image in the gallery
         prevImage() {
@@ -113,7 +126,7 @@ export default {
 
         addToCart() {
             if (!this.selectedSize) {
-                this.sizeError = true
+                this.sizeError = true;
                 toast({
                     message: 'Please select a size before adding to the cart',
                     type: 'is-danger',
@@ -121,21 +134,21 @@ export default {
                     pauseOnHover: true,
                     duration: 2000,
                     position: 'bottom-right',
-                })
-                return
+                });
+                return;
             }
 
             // Reset the error if size is selected
-            this.sizeError = false
+            this.sizeError = false;
 
             const item = {
                 product: this.product,
                 quantity: this.quantity,
                 size: this.selectedSize
-            }
+            };
 
             // Commit the action to Vuex to handle cart item addition
-            this.$store.commit('addOrUpdateCartItem', item)
+            this.$store.commit('addOrUpdateCartItem', item);
 
             toast({
                 message: 'The product was added to the cart',
@@ -144,9 +157,8 @@ export default {
                 pauseOnHover: true,
                 duration: 2000,
                 position: 'bottom-right',
-            })
+            });
         }
     }
 }
 </script>
-

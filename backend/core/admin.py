@@ -1,23 +1,22 @@
 from django.contrib import admin
-from .models import Product,Category,ItemImage,Size
+from .models import Product, Category, ItemImage, Size, ProductSizePrice
 
 class ItemImageInline(admin.TabularInline):
     model = ItemImage
-    extra = 1 # default number of image input form (1)
+    extra = 1  # default number of image input form (1)
 
-class ItemAdmin(admin.ModelAdmin):
-    inlines = [ItemImageInline]
+class ProductSizePriceInline(admin.TabularInline):
+    model = ProductSizePrice
+    extra = 1  # Allows adding a new size-price pair by default
+    min_num = 1  # Ensures at least one size-price entry is required
+    fields = ['size', 'price']  # Displays only the fields for size and price
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'price', 'date_added')
-    inlines = [ItemImageInline]  # Display ItemImage in the Product admin page
-    filter_horizontal = ('sizes',)  # Allow selection of multiple sizes
+    list_display = ('name', 'date_added')
+    inlines = [ItemImageInline, ProductSizePriceInline]  # Include both inlines
+    prepopulated_fields = {"slug": ("name",)}
 
-#adds product, category and image to admin site
-admin.site.register(Product,ItemAdmin)
+# Register models in the admin site
+admin.site.register(Product, ProductAdmin)
 admin.site.register(Category)
-
-
-@admin.register(Size) # Adds sizes to the admin site
-class SizeAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+admin.site.register(Size)

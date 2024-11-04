@@ -19,10 +19,10 @@
 
                     <tbody>
                         <CartItem
-                            v-for="(item, index) in cart.items"
-                            v-bind:key="item.product.id + '-' + item.size"  
-                            v-bind:initialItem="item"
-                            v-on:removeFromCart="removeFromCart" /><!-- iterates over cart.items to bind product and size -->
+                        v-for="(item, index) in cart.items"
+                        :key="item.product.id + '-' + item.size.id"
+                        :initialItem="item"
+                        @removeFromCart="removeFromCart" /><!-- iterates over cart.items to bind product and size -->
                     </tbody>
                 </table>
 
@@ -76,7 +76,9 @@ export default {
             return this.cart.items.reduce((acc, curVal) => acc + curVal.quantity, 0)
         },
         cartTotalPrice() {
-            return this.cart.items.reduce((acc, curVal) => acc + curVal.product.price * curVal.quantity, 0)
+            return this.cart.items.reduce((acc, curVal) => {const sizeDetail = curVal.product.sizes.find(s => s.size.id === curVal.size.id);
+            const price = sizeDetail ? parseFloat(sizeDetail.price) : 0;
+            return acc + price * curVal.quantity;}, 0);
         },
     }
 }

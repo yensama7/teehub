@@ -2,11 +2,11 @@
     <div class="column is-3">
         <div class="box">
             <figure class="image mb-4">
-                <img v-bind:src="product.get_thumbnail">
+                <img v-bind:src="product.get_thumbnail" alt="Product Thumbnail">
             </figure>
 
             <h3 class="is-size-4">{{ product.name }}</h3>
-            <p class="is-size-6 has-text-grey">${{ product.price }}</p>
+            <p class="is-size-6 has-text-grey">{{ formattedPrice }}</p> <!-- Display formatted price -->
 
             <router-link v-bind:to="product.get_absolute_url" class="button is-dark mt-4">View details</router-link>
         </div>
@@ -18,14 +18,29 @@ export default {
     name: 'ProductBox',
     props: {
         product: Object // collects data from another page
+    },
+    computed: {
+        formattedPrice() {
+            // Extract prices from the product sizes
+            const prices = this.product.sizes.map(size => size.price);
+            const minPrice = Math.min(...prices);
+            const maxPrice = Math.max(...prices);
+
+            // If all prices are the same, return that price
+            if (minPrice === maxPrice) {
+                return `$${minPrice}`;
+            }
+            // Otherwise, return a price range
+            return `$${minPrice} - $${maxPrice}`;
+        }
     }
 }
 </script>
 
 <style scoped>
-  .image {
+.image {
     margin-top: -1.25rem;
     margin-left: -1.25rem;
     margin-right: -1.25rem;
-  }
+}
 </style>
