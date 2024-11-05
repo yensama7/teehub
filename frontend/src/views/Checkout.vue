@@ -23,10 +23,10 @@
                             v-bind:key="item.product.id + '-' + item.size"
                         >
                             <td>{{ item.product.name }}</td>
-                            <td>${{ item.product.price }}</td>
+                            <td>${{ getSelectedSizePrice(item) }}</td>
                             <td>{{ item.quantity }}</td>
-                            <td>${{ getItemTotal(item).toFixed(2) }}</td>
-                            <td>{{ item.size }}</td>
+                            <td>${{ getItemTotal(item) }}</td>
+                            <td>{{ getSizeName(item) }}</td>
                         </tr>
                     </tbody>
 
@@ -34,7 +34,7 @@
                         <tr>
                             <td colspan="2">Total</td>
                             <td>{{ cartTotalLength }}</td>
-                            <td>${{ cartTotalPrice.toFixed(2) }}</td>
+                            <td>${{ cartTotalPrice }}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -155,6 +155,14 @@ export default {
         this.cart = this.$store.state.cart;
     }, 
     methods: {
+        getSizeName(item) {
+        const sizeDetail = item.product.sizes.find(s => s.size.id === item.size);
+        return sizeDetail ? sizeDetail.size.name : 'N/A';
+    },
+    getSelectedSizePrice(item) {
+        const sizeDetail = item.product.sizes.find(s => s.size.id === item.size);
+        return sizeDetail ? parseFloat(sizeDetail.price) : 0;
+    },
         callback: function (response) {
             // Check the status of the transaction
         if (response.status === "success") {
@@ -165,8 +173,8 @@ export default {
                 const obj = {
                     product: item.product.id,
                     quantity: item.quantity,
-                    price: item.product.price * item.quantity,
-                    size: item.product.sizes.name
+                    price: this.getSelectedSizePrice(item) * item.quantity,
+                    sizes: item.sizes
                 };
                 items.push(obj);
             }
@@ -189,7 +197,9 @@ export default {
                     console.log("Checkout successful", response);
                     // Optionally redirect or show a success message
                     this.$store.commit('clearCart')
-                    this.$router.push('/cart/success');
+                    this.$router.push('/cart/success').then(() => {
+                        window.location.reload();
+                    });
                 })
                 .catch(error => {
                     console.error("Checkout error", error);
@@ -210,8 +220,10 @@ export default {
             console.log('Payment modal closed');
         },
         getItemTotal(item) {
-            return item.quantity * item.product.price;
-        },
+        return item.quantity * this.getSelectedSizePrice(item);
+    },
+
+    
         submitForm() {
             this.errors = [];
             
@@ -284,9 +296,9 @@ export default {
         },
 
     cartTotalPrice() {
-        return this.cart.items.reduce((acc, curVal) => {
-            return acc += curVal.product.price * curVal.quantity;
-        }, 0);
+        return this.cart.items.reduce((acc, item) => {
+        return acc + (this.getSelectedSizePrice(item) * item.quantity);
+    }, 0);
     },
     cartTotalLength() {
         return this.cart.items.reduce((acc, curVal) => {
@@ -301,7 +313,7 @@ export default {
         return this.submitForm(); // Call submitForm method
     },
     paystack_price(){
-        return this.cartTotalPrice * 100; // price converted from kobo to naira in paystack
+        return this.cartTotalPrice * 100; // Convert to kobo for Paystack
     }
 }
     }

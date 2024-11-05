@@ -6,13 +6,13 @@
             <!-- Display the name of the selected size -->
             <small>Size: {{ getSizeName() }}</small>
         </td>
-        <td>${{ getSelectedSizePrice().toFixed(2) }}</td> <!-- Display the price for the selected size -->
+        <td>${{ getSelectedSizePrice() }}</td> <!-- Display the price for the selected size -->
         <td>
             <a @click="decrementQuantity(item)">-</a>
             {{ item.quantity }}
             <a @click="incrementQuantity(item)">+</a>
         </td>
-        <td>${{ getItemTotal().toFixed(2) }}</td> <!-- Total for this item -->
+        <td>${{ getItemTotal() }}</td> <!-- Total for this item -->
         <td><button class="delete" @click="removeFromCart(item)"></button></td>
     </tr>
 </template>

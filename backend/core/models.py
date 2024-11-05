@@ -79,7 +79,7 @@ class Product(models.Model):
 class ProductSizePrice(models.Model):
     product = models.ForeignKey(Product, related_name='size_prices', on_delete=models.CASCADE)
     size = models.ForeignKey(Size, on_delete=models.CASCADE)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price = models.IntegerField(blank=True, null=True)
 
     class Meta:
         unique_together = ('product', 'size')

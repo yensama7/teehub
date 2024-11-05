@@ -32,7 +32,7 @@
             <div class="column is-12 box">
                 <h2 class="subtitle">Summary</h2>
 
-                <strong>${{ cartTotalPrice.toFixed(2) }}</strong>, {{ cartTotalLength }} items
+                <strong>${{ cartTotalPrice }}</strong>, {{ cartTotalLength }} items
 
                 <hr>
 
@@ -62,6 +62,14 @@ export default {
         this.cart = this.$store.state.cart // access cart from vuex store
     },
     methods: {
+        getSelectedSizePrice(item) {
+    // Find the size object in product.sizes that matches the selected size id
+    const sizeDetail = item.product.sizes.find(s => s.size.id === item.size);
+    
+    // If sizeDetail is found, return the price as a float; otherwise, return 0
+    return sizeDetail ? parseFloat(sizeDetail.price) : 0;
+},
+
         removeFromCart(item) {
             // Filter by both product ID and size
             this.cart.items = this.cart.items.filter(i => i.product.id !== item.product.id || i.size !== item.size) // removes the product from the crt
@@ -76,9 +84,12 @@ export default {
             return this.cart.items.reduce((acc, curVal) => acc + curVal.quantity, 0)
         },
         cartTotalPrice() {
-            return this.cart.items.reduce((acc, curVal) => {const sizeDetail = curVal.product.sizes.find(s => s.size.id === curVal.size.id);
-            const price = sizeDetail ? parseFloat(sizeDetail.price) : 0;
-            return acc + price * curVal.quantity;}, 0);
+            return this.cart.items.reduce((acc, item) => {
+        // Call getSelectedSizePrice with the current item
+        const sizePrice = this.getSelectedSizePrice(item); // Pass the current item to the function
+        console.log(sizePrice)
+        return acc + (sizePrice * item.quantity); // Calculate total price
+    }, 0);
         },
     }
 }

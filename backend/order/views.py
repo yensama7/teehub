@@ -16,23 +16,21 @@ from rest_framework.decorators import api_view
 @authentication_classes([authentication.TokenAuthentication])
 @permission_classes([permissions.IsAuthenticated])
 def checkout(request):
-    serializer = OrderSerializer(data=request.data) # send the data to order serializer when checkout is called
+    serializer = OrderSerializer(data=request.data)
     
     if serializer.is_valid():
-        # Calculate total paid amount
-        paid_amount = sum(item.get('quantity') * item.get('product').price for item in serializer.validated_data['items']) # get the amount paid from the response
+        paid_amount = sum(
+            item['quantity'] * item['price'] for item in serializer.validated_data['items']
+        )
 
         try:
-
-            serializer.save(user=request.user, paid_amount=paid_amount, items= serializer.validated_data['items']) # sends the info to the backend with amount paid and order details
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            order = serializer.save(user=request.user, paid_amount=paid_amount)
+            return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
         except Exception as e:
             print(f"error : {e}")
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
     else:
-        print("Serializer Errors:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

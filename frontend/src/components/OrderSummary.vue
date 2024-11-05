@@ -21,10 +21,10 @@
                     v-bind:key="item.product.id + '-' + item.size"
                 > <!--iterates over order.items, settingproduct id as unique key-->
                     <td>{{ item.product.name }}</td>
-                    <td>${{ item.product.price }}</td>
+                    <td>${{ item.price }}</td>
                     <td>{{ item.quantity }}</td>
-                    <td>${{ getItemTotal(item).toFixed(2) }}</td>
-                    <td>{{ item.size }}</td>
+                    <td>${{ getItemTotal(item) }}</td>
+                    <td>{{ item.sizes}}</td>
                 </tr>
             </tbody>
         </table>
@@ -39,7 +39,7 @@ export default {
     },
     methods: {
         getItemTotal(item) {
-            return item.quantity * item.product.price
+            return item.quantity * item.price
         },
         orderTotalLength(order) {
             return order.items.reduce((acc, curVal) => {
