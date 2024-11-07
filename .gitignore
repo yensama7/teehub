@@ -1,5 +1,6 @@
 teehub/
 .vscode/
+.idea/
 db.sqlite3
 image/
 migrations/
