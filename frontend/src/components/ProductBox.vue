@@ -1,8 +1,8 @@
 <template>
     <div class="column is-3">
         <div class="box">
-            <figure class="image mb-4">
-                <img v-bind:src="product.get_thumbnail" alt="Product Thumbnail">
+            <figure class="image mb-4" style="width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+                <img v-bind:src="product.get_thumbnail" alt="Product Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
             </figure>
 
             <h3 class="is-size-4">{{ product.name }}</h3>
@@ -42,5 +42,16 @@ export default {
     margin-top: -1.25rem;
     margin-left: -1.25rem;
     margin-right: -1.25rem;
+    width: 300px; /* Set width to 300px */
+    height: 300px; /* Set height to 300px */
+    display: flex; /* Use flexbox to center image */
+    justify-content: center; /* Horizontally center image */
+    align-items: center; /* Vertically center image */
+    overflow: hidden; /* Ensures the image doesn't overflow the container */
+}
+.image img {
+    width: 100%; /* Stretch the image to fill the container */
+    height: 100%; /* Make the image take the full height */
+    object-fit: contain; /* Crop the image to fit the container */
 }
 </style>

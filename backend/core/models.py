@@ -2,7 +2,7 @@ from django.db import models
 from io import BytesIO
 from django.core.files import File
 from PIL import Image
-length = height =150
+length = height =300
 
 
 class Category(models.Model):
@@ -66,12 +66,12 @@ class Product(models.Model):
         img = Image.open(image)
         if img.mode != 'RGB':
             img.convert('RGB') # converts to RGB format
-        img.thumbnail(size)
+        img.thumbnail(size, Image.Resampling.LANCZOS)  # Apply thumbnail method with better quality
 
         thumb_io = BytesIO()
-        img.save(thumb_io, 'PNG', quality=85) # saves as png
+        img.save(thumb_io, 'JPEG',quality=85 ,optimize=True) # saves as png
 
-        thumbnail = File(thumb_io, name=image.name) 
+        thumbnail = File(thumb_io, name=image.name.replace('.png','.jpg')) 
         
         return thumbnail
     
