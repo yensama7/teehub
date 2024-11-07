@@ -37,6 +37,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "get_thumbnail",
             "sizes",
             "images",
+            "stock",
         )
 
 

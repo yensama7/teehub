@@ -34,6 +34,7 @@ class Product(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='', blank=True, null=True) # Adds one image
     thumbnail = models.ImageField(upload_to='thumbnail/', blank=True, null=True)
+    stock = models.PositiveIntegerField(default=0)  # Add quantity_in_stock field
 
     class Meta:
         ordering = ('-date_added',) # in decending order
@@ -42,7 +43,10 @@ class Product(models.Model):
         return self.name
     
     def get_absolute_url(self):
-        return f'/{self.category.slug}/{self.slug}/' # gets the url for individual products
+        if self.stock > 0:
+            return f'/{self.category.slug}/{self.slug}/'  # gets the url for individual products
+        else:
+            return '#'  # Or redirect to a "Out of Stock" page
     
     def get_image(self):
         if self.image:

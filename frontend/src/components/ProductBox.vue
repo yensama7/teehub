@@ -1,14 +1,19 @@
 <template>
     <div class="column is-3">
         <div class="box">
-            <figure class="image mb-4" style="width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+            <figure class="image mb-4" style="width: 300px; height: 300px; overflow: hidden;">
                 <img v-bind:src="product.get_thumbnail" alt="Product Thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
             </figure>
 
             <h3 class="is-size-4">{{ product.name }}</h3>
             <p class="is-size-6 has-text-grey">{{ formattedPrice }}</p> <!-- Display formatted price -->
 
-            <router-link v-bind:to="product.get_absolute_url" class="button is-dark mt-4">View details</router-link>
+            <div v-if="product.stock > 0">
+                <router-link v-bind:to="product.get_absolute_url" class="button is-dark mt-4">View details</router-link>
+            </div>
+            <div v-else>
+                <button class="button is-danger mt-4" disabled>Out of Stock</button>
+            </div>
         </div>
     </div>
 </template>
@@ -36,22 +41,3 @@ export default {
     }
 }
 </script>
-
-<style scoped>
-.image {
-    margin-top: -1.25rem;
-    margin-left: -1.25rem;
-    margin-right: -1.25rem;
-    width: 300px; /* Set width to 300px */
-    height: 300px; /* Set height to 300px */
-    display: flex; /* Use flexbox to center image */
-    justify-content: center; /* Horizontally center image */
-    align-items: center; /* Vertically center image */
-    overflow: hidden; /* Ensures the image doesn't overflow the container */
-}
-.image img {
-    width: 100%; /* Stretch the image to fill the container */
-    height: 100%; /* Make the image take the full height */
-    object-fit: contain; /* Crop the image to fit the container */
-}
-</style>

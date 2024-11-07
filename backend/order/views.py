@@ -9,6 +9,7 @@ from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from .models import Order
 from .serializers import MyOrderSerializer
+from core.models import Product
 
 from rest_framework.decorators import api_view
 
@@ -25,6 +26,20 @@ def checkout(request):
 
         try:
             order = serializer.save(user=request.user, paid_amount=paid_amount)
+        
+        # Reduce stock quantity for each ordered item
+            for item in serializer.validated_data['items']:
+                product = item['product']  # Assuming 'product' is an ID or object
+                ordered_quantity = item['quantity']
+                
+                # Get the product and reduce its stock
+                product_instance = Product.objects.get(id=product)
+                if product_instance.stock >= ordered_quantity:
+                    product_instance.stock -= ordered_quantity
+                    product_instance.save()
+                else:
+                    return Response({"error": "Not enough stock for product: {}".format(product_instance.name)}, status=status.HTTP_400_BAD_REQUEST)
+            
             return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
         except Exception as e:
             print(f"error : {e}")
