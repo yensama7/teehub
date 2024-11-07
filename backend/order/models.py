@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from core.models import Product
+import uuid
 
 
 # customers order
@@ -12,6 +13,7 @@ class Order(models.Model):
     ]
 
     user = models.ForeignKey(User, related_name='order', on_delete=models.CASCADE)
+    custom_order_id = models.CharField(max_length=255, unique=True, blank=True, null=True)  # Custom Order ID
     first_name =models.CharField(max_length=100)
     last_name =models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
@@ -22,6 +24,13 @@ class Order(models.Model):
     paid_amount = models.IntegerField(blank=True, null=True)
     transaction_id = models.CharField(max_length=250, null=True)
     delivery_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+
+
+    def save(self, *args, **kwargs):
+        # Generate a unique order ID with the user's ID and a UUID for additional uniqueness
+        if not self.custom_order_id:
+            self.custom_order_id = f"ORD-{self.user.id}-{uuid.uuid4().hex[:8]}"
+        super(Order, self).save(*args, **kwargs)
 
 
     class Meta:
