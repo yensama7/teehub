@@ -9,7 +9,7 @@ from rest_framework import authentication, permissions
 from rest_framework.response import Response
 from .models import Order
 from .serializers import MyOrderSerializer
-from core.models import Product
+from backend.core.models import Product
 
 from rest_framework.decorators import api_view
 
