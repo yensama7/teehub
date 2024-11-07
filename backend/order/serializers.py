@@ -39,7 +39,8 @@ class MyOrderSerializer(serializers.ModelSerializer):
             "phone",
             "items",
             "paid_amount",
-            "transaction_id"
+            "transaction_id",
+            "delivery_status",
         )
 
 

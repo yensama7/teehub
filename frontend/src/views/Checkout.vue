@@ -174,7 +174,7 @@ export default {
                     product: item.product.id,
                     quantity: item.quantity,
                     price: this.getSelectedSizePrice(item) * item.quantity,
-                    sizes: item.sizes
+                    sizes: this.getSizeName(item) // get size name
                 };
                 items.push(obj);
             }

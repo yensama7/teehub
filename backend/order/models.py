@@ -5,6 +5,12 @@ from core.models import Product
 
 # customers order
 class Order(models.Model):
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('delivered', 'Delivered'),
+    ]
+
     user = models.ForeignKey(User, related_name='order', on_delete=models.CASCADE)
     first_name =models.CharField(max_length=100)
     last_name =models.CharField(max_length=100)
@@ -15,12 +21,14 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     paid_amount = models.IntegerField(blank=True, null=True)
     transaction_id = models.CharField(max_length=250, null=True)
+    delivery_status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+
 
     class Meta:
         ordering = ['-created_at',]
 
     def __str__(self):
-        return self.first_name
+        return f"{self.first_name} - {self.delivery_status}"
 
 
 

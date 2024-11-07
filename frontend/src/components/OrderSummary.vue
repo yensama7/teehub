@@ -1,6 +1,6 @@
 <template>
     <div class="box mb-4">
-        <h3 class="is-size-4 mb-6">Order #{{ order.id }}</h3> <!--get order id-->
+        <h3 class="is-size-4 mb-6">Order #{{ order.id }} - Status: {{ order.delivery_status }}</h3> <!--get order id-->
 
         <h4 class="is-size-5">Products</h4>
 
