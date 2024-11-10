@@ -6,12 +6,14 @@ from .serializers import OrderSerializer
 
 from rest_framework.views import APIView
 from rest_framework import authentication, permissions
-from rest_framework.response import Response
-from .models import Order
 from .serializers import MyOrderSerializer
+<<<<<<< HEAD
 from backend.core.models import Product
 
 from rest_framework.decorators import api_view
+=======
+from core.models import ProductSizePrice
+>>>>>>> ee55c55 (out of stock functionality working, but keeps giving 400 error on checkout)
 
 @api_view(['POST'])
 @authentication_classes([authentication.TokenAuthentication])
@@ -25,28 +27,47 @@ def checkout(request):
         )
 
         try:
+            # Save the order
             order = serializer.save(user=request.user, paid_amount=paid_amount)
-        
-        # Reduce stock quantity for each ordered item
+
+            # Reduce stock quantity for each ordered item
             for item in serializer.validated_data['items']:
-                product = item['product']  # Assuming 'product' is an ID or object
+                product_id = item.get('product')  # ID of the product
+                size_id = item.get('size')        # ID of the size
                 ordered_quantity = item['quantity']
-                
-                # Get the product and reduce its stock
-                product_instance = Product.objects.get(id=product)
-                if product_instance.stock >= ordered_quantity:
-                    product_instance.stock -= ordered_quantity
-                    product_instance.save()
+
+                # Check if size_id is provided
+                if size_id is None:
+                    return Response({"error": "Size is required for each item."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # Get the specific ProductSizePrice instance based on product and size
+                try:
+                    product_size_instance = ProductSizePrice.objects.get(product_id=product_id, size_id=size_id)
+                except ProductSizePrice.DoesNotExist:
+                    return Response(
+                        {"error": f"Product or size not found for product ID {product_id} and size ID {size_id}."},
+                        status=status.HTTP_404_NOT_FOUND
+                    )
+
+                # Check if there is enough stock
+                if product_size_instance.stock >= ordered_quantity:
+                    product_size_instance.stock -= ordered_quantity
+                    product_size_instance.save()
                 else:
-                    return Response({"error": "Not enough stock for product: {}".format(product_instance.name)}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(
+                        {"error": f"Not enough stock for product: {product_size_instance.product.name}, size: {product_size_instance.size.name}"},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
             
+            # Return order data upon successful order creation
             return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+        
         except Exception as e:
             print(f"error : {e}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
-    else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # If serializer is invalid, return errors
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class OrderList(APIView):

@@ -3,7 +3,7 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     cart: {
-        items: [],
+      items: [],
     },
     isAuthenticated: false,
     token: '',
@@ -12,52 +12,58 @@ export default createStore({
   mutations: {
     initializeStore(state) {
       if (localStorage.getItem('cart')) {
-        state.cart = JSON.parse(localStorage.getItem('cart')) // if cart is caled it will give cart items
+        state.cart = JSON.parse(localStorage.getItem('cart'))
       } else {
-        localStorage.setItem('cart', JSON.stringify(state.cart))// updates cart
+        localStorage.setItem('cart', JSON.stringify(state.cart))
       }
 
-      if (localStorage.getItem('token')) { // if token is caled it will send token
-          state.token = localStorage.getItem('token')
-          state.isAuthenticated = true
+      if (localStorage.getItem('token')) {
+        state.token = localStorage.getItem('token')
+        state.isAuthenticated = true
       } else {
-          state.token = ''
-          state.isAuthenticated = false
-      } 
+        state.token = ''
+        state.isAuthenticated = false
+      }
     },
     addOrUpdateCartItem(state, item) {
-      const existingItem = state.cart.items.find(i => i.product.id === item.product.id && i.size === item.size)// adds product to cart based on product id and size
+      const existingItem = state.cart.items.find(i => i.product.id === item.product.id && i.size === item.size)
 
+      // Check stock availability
       if (existingItem) {
-          // If the product with the same size exists, just update the quantity
-          existingItem.quantity += item.quantity
+        const newQuantity = existingItem.quantity + item.quantity
+        if (newQuantity > item.stock) {
+          alert(`Only ${item.stock} items are in stock for the selected size.`)
+          existingItem.quantity = item.stock // Limit quantity to stock level
+        } else {
+          existingItem.quantity = newQuantity
+        }
       } else {
-          // Otherwise, add the new item to the cart
-          state.cart.items.push(item)
+        if (item.quantity > item.stock) {
+          alert(`Only ${item.stock} items are in stock for the selected size.`)
+          item.quantity = item.stock // Set quantity to available stock
+        }
+        state.cart.items.push(item)
       }
 
-      // Save updated cart to localStorage or API
+      // Save updated cart to localStorage
       localStorage.setItem('cart', JSON.stringify(state.cart))
-  },
+    },
     setIsLoading(state, status) {
       state.isLoading = status
     },
     setToken(state, token) {
-        state.token = token
-        state.isAuthenticated = true
-    },  
+      state.token = token
+      state.isAuthenticated = true
+    },
     removeToken(state) {
-        state.token = ''
-        state.isAuthenticated = false
+      state.token = ''
+      state.isAuthenticated = false
     },
     clearCart(state) {
       state.cart = { items: [] }
-
       localStorage.setItem('cart', JSON.stringify(state.cart))
     },
   },
-  actions: {
-  },
-  modules: {
-  }
+  actions: {},
+  modules: {}
 })

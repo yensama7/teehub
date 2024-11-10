@@ -19,12 +19,13 @@ class ProductSizePriceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProductSizePrice
-        fields = ['id', 'size', 'price']  # Include size and price fields
+        fields = ['id', 'size', 'price','stock']  # Include size and price fields
 
 
 class ProductSerializer(serializers.ModelSerializer):
     sizes = ProductSizePriceSerializer(many=True, read_only=True, source='size_prices')  # Include size-specific prices
     images = ItemImageSerializer(many=True, read_only=True)  # Include item images
+    is_out_of_stock = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -37,8 +38,11 @@ class ProductSerializer(serializers.ModelSerializer):
             "get_thumbnail",
             "sizes",
             "images",
-            "stock",
+            "is_out_of_stock",
         )
+    def get_is_out_of_stock(self, obj):
+        # Check if all sizes are out of stock
+        return not any(size.stock > 0 for size in obj.size_prices.all())
 
 
 class CategorySerializer(serializers.ModelSerializer):

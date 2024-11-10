@@ -8,11 +8,11 @@
             <h3 class="is-size-4">{{ product.name }}</h3>
             <p class="is-size-6 has-text-grey">{{ formattedPrice }}</p> <!-- Display formatted price -->
 
-            <div v-if="product.stock > 0">
-                <router-link v-bind:to="product.get_absolute_url" class="button is-dark mt-4">View details</router-link>
+            <div v-if="isOutOfStock">
+                <button class="button is-danger mt-4" disabled>Out of Stock</button>
             </div>
             <div v-else>
-                <button class="button is-danger mt-4" disabled>Out of Stock</button>
+                <router-link v-bind:to="product.get_absolute_url" class="button is-dark mt-4">View details</router-link>
             </div>
         </div>
     </div>
@@ -37,6 +37,10 @@ export default {
             }
             // Otherwise, return a price range
             return `$${minPrice} - $${maxPrice}`;
+        },
+        isOutOfStock() {
+            // Check if all sizes for this product have a stock level of 0
+            return this.product.sizes.every(size => size.stock === 0);
         }
     }
 }

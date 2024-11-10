@@ -34,7 +34,6 @@ class Product(models.Model):
     date_added = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to='', blank=True, null=True) # Adds one image
     thumbnail = models.ImageField(upload_to='thumbnail/', blank=True, null=True)
-    stock = models.PositiveIntegerField(default=0)  # Add quantity_in_stock field
 
     class Meta:
         ordering = ('-date_added',) # in decending order
@@ -43,7 +42,7 @@ class Product(models.Model):
         return self.name
     
     def get_absolute_url(self):
-        if self.stock > 0:
+        if self.size_prices.filter(stock__gt=0).exists():
             return f'/{self.category.slug}/{self.slug}/'  # gets the url for individual products
         else:
             return '#'  # Or redirect to a "Out of Stock" page
@@ -84,12 +83,13 @@ class ProductSizePrice(models.Model):
     product = models.ForeignKey(Product, related_name='size_prices', on_delete=models.CASCADE)
     size = models.ForeignKey(Size, on_delete=models.CASCADE)
     price = models.IntegerField(blank=True, null=True)
+    stock = models.PositiveIntegerField(default=0)  # Add stock field
 
     class Meta:
         unique_together = ('product', 'size')
 
     def __str__(self):
-        return f"{self.product.name} - {self.size.name} - {self.price}"
+        return f"{self.product.name} - {self.size.name}"
         
 
 

@@ -9,7 +9,7 @@ class ProductSizePriceInline(admin.TabularInline):
     model = ProductSizePrice
     extra = 1  # Allows adding a new size-price pair by default
     min_num = 1  # Ensures at least one size-price entry is required
-    fields = ['size', 'price']  # Displays only the fields for size and price
+    fields = ['size', 'price', 'stock']  # Displays fields for size, price, and stock
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('name', 'date_added')

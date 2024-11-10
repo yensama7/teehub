@@ -18,6 +18,8 @@
 </template>
 
 <script>
+
+import { toast } from 'bulma-toast'
 export default {
     name: 'CartItem',
     props: {
@@ -54,9 +56,21 @@ export default {
             }
         },
         incrementQuantity(item) {
-            item.quantity += 1;
-            this.updateCart();
-        },
+    const sizeDetail = item.product.sizes.find(s => s.size.id === item.size);
+    const maxStock = sizeDetail ? sizeDetail.stock : 0;
+
+    if (item.quantity < maxStock) {
+        item.quantity += 1;
+        this.updateCart();
+    } else {
+        toast({
+            message: `Only ${maxStock} available in stock.`,
+            type: 'is-warning',
+            duration: 2000,
+        });
+    }
+}
+,
         updateCart() {
             localStorage.setItem('cart', JSON.stringify(this.$store.state.cart));
         },
