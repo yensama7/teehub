@@ -3,17 +3,14 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.response import Response
 from .models import Order
 from .serializers import OrderSerializer
+from django.shortcuts import get_object_or_404
 
 from rest_framework.views import APIView
 from rest_framework import authentication, permissions
 from .serializers import MyOrderSerializer
-<<<<<<< HEAD
-from backend.core.models import Product
 
 from rest_framework.decorators import api_view
-=======
 from core.models import ProductSizePrice
->>>>>>> ee55c55 (out of stock functionality working, but keeps giving 400 error on checkout)
 
 @api_view(['POST'])
 @authentication_classes([authentication.TokenAuthentication])
@@ -33,19 +30,21 @@ def checkout(request):
             # Reduce stock quantity for each ordered item
             for item in serializer.validated_data['items']:
                 product_id = item.get('product')  # ID of the product
-                size_id = item.get('size')        # ID of the size
+                size_name = item.get('sizes')        # ID of the size
                 ordered_quantity = item['quantity']
 
                 # Check if size_id is provided
-                if size_id is None:
+                if size_name is None:
                     return Response({"error": "Size is required for each item."}, status=status.HTTP_400_BAD_REQUEST)
 
                 # Get the specific ProductSizePrice instance based on product and size
                 try:
-                    product_size_instance = ProductSizePrice.objects.get(product_id=product_id, size_id=size_id)
+                     product_size_instance = get_object_or_404(
+                    ProductSizePrice, product_id=product_id, size__name=size_name
+                )
                 except ProductSizePrice.DoesNotExist:
                     return Response(
-                        {"error": f"Product or size not found for product ID {product_id} and size ID {size_id}."},
+                        {"error": f"Product or size not found for product ID {product_id} and size ID {size_name}."},
                         status=status.HTTP_404_NOT_FOUND
                     )
 
